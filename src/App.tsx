@@ -1,11 +1,19 @@
-import './App.css';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Home from './pages/Home';
+import Exercise from './pages/Exercise';
+import Exam from './pages/Exam';
 
 const App = () => {
   return (
-    <div className="content">
-      <h1>Rsbuild with React</h1>
-      <p>Start building amazing things with Rsbuild.</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/">
+          <Route index element={<Home />} />
+          <Route path='exercise' element={<Exercise />} />
+          <Route path="/exam" element={<Exam />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 };
 
