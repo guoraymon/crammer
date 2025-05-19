@@ -39,7 +39,6 @@ const Home: React.FC = () => {
                     </Link>
                 </div>
 
-                {/* 可选：添加一些描述性文本或页脚 */}
                 <p className="mt-6 text-gray-600 text-sm">请选择您想要的练习模式。</p>
             </div>
         </div>

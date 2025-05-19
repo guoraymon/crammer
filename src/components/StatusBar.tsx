@@ -1,37 +1,42 @@
 import React from 'react';
-// 引入一个后退箭头图标，这里使用 react-icons 库作为示例
-// 如果你的项目中没有安装 react-icons，可以先运行 npm install react-icons 或 yarn add react-icons
-// 如果不想使用图标，可以只使用文本 "返回"
 import { IoIosArrowBack } from "react-icons/io";
+// 引入一个图标来表示跳转，例如一个数字列表图标
+import { BsListOl } from "react-icons/bs"; // 示例图标，请确保已安装 react-icons
 
 interface StatusBarProps {
     /** 在状态栏中间显示的标题 (可选) */
     title?: string;
     /** 后退按钮点击时调用的函数 */
     onBack: () => void;
+    /** 跳转按钮点击时调用的函数 (可选) */
+    onJumpClick?: () => void;
+    /** 是否显示跳转按钮 (控制其可见性) */
+    showJumpButton?: boolean;
 }
 
-const StatusBar: React.FC<StatusBarProps> = ({ title, onBack }) => {
+const StatusBar: React.FC<StatusBarProps> = ({
+    title,
+    onBack,
+    onJumpClick,
+    showJumpButton = false // 默认为不显示
+}) => {
     return (
-        // 使用 flex 布局，居中对齐项目，添加背景、内边距和底部边框
-        // sticky 和 top-0 使状态栏在滚动时固定在顶部
-        // z-10 确保状态栏在内容上方
-        <div className="flex items-center bg-gray-100 px-4 py-3 border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-            {/* 后退按钮 */}
-            {/* 使用 flex 布局使图标和文本对齐，增加点击区域，添加 hover 和 focus 效果 */}
+        // 使用 flex 布局，两端对齐内容，固定在顶部
+        <div className="flex items-center bg-gray-100 px-4 py-3 border-b border-gray-200 sticky top-0 z-10 shadow-sm justify-between">
+            {/* 左侧：后退按钮 */}
             <button
                 onClick={onBack}
                 className="flex items-center text-blue-600 hover:text-blue-800 transition-colors pr-4 py-2 -ml-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="返回上一页" // 为屏幕阅读器提供描述
+                aria-label="返回上一页"
             >
-                {/* 后退箭头图标 */}
-                <IoIosArrowBack className="mr-1" size={20} /> {/* mr-1 添加图标和文本间的间距 */}
-                返回 {/* 按钮文本 */}
+                 <IoIosArrowBack className="mr-1" size={20} />
+                 返回
             </button>
 
-            {/* 标题区域 */}
-            {/* flex-grow 允许此区域填充可用空间，text-center 使标题居中 */}
-            <div className="flex-grow text-center px-4 truncate"> {/* px-4 避免标题太靠近按钮 */}
+            {/* 中间：标题 */}
+            {/* flex-grow 允许标题填充中间空间，text-center 使文本居中 */}
+            {/* px-4 避免标题紧贴按钮 */}
+            <div className="flex-grow text-center px-4 truncate">
                 {title && (
                     <h2 className="text-lg font-semibold text-gray-800 truncate">
                         {title}
@@ -39,9 +44,21 @@ const StatusBar: React.FC<StatusBarProps> = ({ title, onBack }) => {
                 )}
             </div>
 
-            {/* 右侧占位符，用于帮助标题在按钮和占位符之间居中 */}
-            {/* 宽度应大致与后退按钮区域的宽度匹配 */}
-            <div className="w-12"></div> {/* 根据实际按钮区域宽度调整 */}
+            {/* 右侧：跳转按钮 (条件显示) */}
+            {/* 只有在 showJumpButton 为 true 且 onJumpClick 函数存在时才显示按钮 */}
+             {showJumpButton && onJumpClick && (
+                 <button
+                     onClick={onJumpClick}
+                     className="flex items-center text-blue-600 hover:text-blue-800 transition-colors pl-4 py-2 -mr-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" // 样式与后退按钮对称
+                     aria-label="跳转到题目"
+                 >
+                     <BsListOl className="mr-1" size={20} /> {/* 使用图标 */}
+                     跳转
+                 </button>
+             )}
+             {/* 如果跳转按钮隐藏，使用一个占位符保持标题居中对齐 */}
+             {!showJumpButton && <div className="w-12"></div>} {/* 宽度与后退按钮区域大致匹配 */ }
+
         </div>
     );
 };
