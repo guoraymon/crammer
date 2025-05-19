@@ -137,6 +137,7 @@ export const getHistoryForQuestion = (
 };
 // --- End History Utility Functions ---
 
+const CURRENT_INDEX_KEY = 'crammer_sequence_current_index'; // 顺序模式下当前题目索引的localStorage key
 
 const Exercise = () => {
     const navigate = useNavigate();
@@ -160,7 +161,6 @@ const Exercise = () => {
 
     // 显示最近几次历史记录的数量
     const HISTORY_DISPLAY_COUNT = 5;
-
 
     useEffect(() => {
         const lines = dataCsv.trim().split('\n');
@@ -187,7 +187,16 @@ const Exercise = () => {
 
         setQuestions(list);
         // 加载题目时重置所有状态
-        setCurrentIndex(0);
+        if (mode === 'sequence') {
+            const savedIndex = localStorage.getItem(CURRENT_INDEX_KEY);
+            if (savedIndex !== null) {
+                setCurrentIndex(Number(savedIndex));
+            } else {
+                setCurrentIndex(0);
+            }
+        } else {
+            setCurrentIndex(0);
+        }
         setSelectedAnswer([]);
         setShowFeedback(false);
         setCorrectCount(0);
@@ -270,9 +279,13 @@ const Exercise = () => {
             // --- 重置历史记录状态结束 ---
 
             // 移动到下一题并重置当前题目的状态
-            setCurrentIndex(prevIndex => prevIndex + 1);
+            setCurrentIndex(prevIndex => {
+                localStorage.setItem(CURRENT_INDEX_KEY, String(prevIndex + 1));
+                return prevIndex + 1
+            });
             setSelectedAnswer([]);
             setShowFeedback(false);
+
         }
     };
 
@@ -432,7 +445,7 @@ const Exercise = () => {
 
                     {/* 操作按钮 (检查答案 / 下一题) */}
                     <div className="mt-6 flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
-                        {/* 只有多选且未显示反馈且有选中答案时才显示“检查答案” */}
+                        {/* 只有多选且未显示反馈且有选中答案时才显示"检查答案" */}
                         {question.type === 'multiple' && selectedAnswer.length > 0 && !showFeedback && (
                             <button
                                 className="w-full sm:w-auto px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors dark:bg-blue-700 dark:hover:bg-blue-600 dark:disabled:opacity-40"
@@ -443,7 +456,7 @@ const Exercise = () => {
                             </button>
                         )}
 
-                        {/* 显示反馈后显示“下一题”或“完成” */}
+                        {/* 显示反馈后显示"下一题"或"完成" */}
                         {showFeedback && (
                             <button
                                 className="w-full sm:w-auto px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors dark:bg-green-700 dark:hover:bg-green-600"
